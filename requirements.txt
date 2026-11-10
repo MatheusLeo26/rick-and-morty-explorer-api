@@ -1,0 +1,17 @@
+# Core Framework & REST API
+Django>=5.1,<7.0
+djangorestframework>=3.15.0,<4.0.0
+
+# Data Analysis & Statistics
+pandas>=2.2.0,<4.0.0
+numpy>=2.0.0,<3.0.0
+
+# External HTTP Integration
+requests>=2.31.0,<3.0.0
+
+# OpenAPI 3 / Swagger Documentation
+drf-spectacular>=0.27.0,<1.0.0
+
+# Environment & Production WSGI Server
+python-dotenv>=1.0.0,<2.0.0
+gunicorn>=22.0.0,<27.0.0
