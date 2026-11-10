@@ -1,0 +1,797 @@
+{
+  "info": {
+    "_postman_id": "a9d7f514-64b2-4e82-9a19-8a391c074b21",
+    "name": "Rick and Morty Explorer API - Portfolio Collection",
+    "description": "Coleção completa para testar tanto a API Pública oficial de Rick and Morty (`{{publicbaseurl}}`) quanto a API própria `rick-and-morty-explorer-api` (`{{localbaseurl}}`), incluindo paginação, filtros, favoritos em SQLite, episódios favoritos, estatísticas com Pandas e cenários de erro.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "publicbaseurl",
+      "value": "https://rickandmortyapi.com/api",
+      "type": "string"
+    },
+    {
+      "key": "localbaseurl",
+      "value": "http://localhost:8000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. API Publica",
+      "description": "Consultas diretas à API pública oficial de Rick and Morty (`{{publicbaseurl}}`) para inspeção dos recursos de leitura, paginação e filtros nativos.",
+      "item": [
+        {
+          "name": "Listar Personagens (Paginado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Contains pagination info and results array', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('info');",
+                  "    pm.expect(jsonData).to.have.property('results');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{publicbaseurl}}/character?page=1",
+              "host": [
+                "{{publicbaseurl}}"
+              ],
+              "path": [
+                "character"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Página da listagem (20 itens por página)"
+                }
+              ]
+            },
+            "description": "Lista personagens diretamente da API pública de Rick and Morty respeitando a paginação."
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Personagem por ID (Rick Sanchez)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Character ID is 1', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.eql(1);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{publicbaseurl}}/character/1",
+              "host": [
+                "{{publicbaseurl}}"
+              ],
+              "path": [
+                "character",
+                "1"
+              ]
+            },
+            "description": "Busca os detalhes completos do personagem de ID 1 (Rick Sanchez) na API pública."
+          },
+          "response": []
+        },
+        {
+          "name": "Filtrar Personagens (Nome, Status e Espécie)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{publicbaseurl}}/character/?name=rick&status=alive&species=Human",
+              "host": [
+                "{{publicbaseurl}}"
+              ],
+              "path": [
+                "character",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "rick"
+                },
+                {
+                  "key": "status",
+                  "value": "alive"
+                },
+                {
+                  "key": "species",
+                  "value": "Human"
+                }
+              ]
+            },
+            "description": "Filtra personagens na API pública combinando nome, status e espécie."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Episódios da API Pública",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{publicbaseurl}}/episode?page=1",
+              "host": [
+                "{{publicbaseurl}}"
+              ],
+              "path": [
+                "episode"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Lista os episódios disponíveis na API pública de Rick and Morty."
+          },
+          "response": []
+        },
+        {
+          "name": "Exemplo de Erro 404 na API Pública",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{publicbaseurl}}/character/999999",
+              "host": [
+                "{{publicbaseurl}}"
+              ],
+              "path": [
+                "character",
+                "999999"
+              ]
+            },
+            "description": "Demonstra o retorno 404 nativo da API pública ao buscar um ID inexistente."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Minha API (Rick and Morty Explorer)",
+      "description": "Fluxos completos da API local (`{{localbaseurl}}`): listagem paginada com cache, filtros, adição/listagem/remoção de favoritos em SQLite, episódios favoritos, estatísticas com Pandas e tratamento padronizado de erros.",
+      "item": [
+        {
+          "name": "Healthcheck da API",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{localbaseurl}}/api/health/",
+              "host": [
+                "{{localbaseurl}}"
+              ],
+              "path": [
+                "api",
+                "health",
+                ""
+              ]
+            },
+            "description": "Verifica se a API local está ativa e exibe as configurações de cache e URL base externa."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Personagens (Paginado + Cache)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Response includes info, from_cache and results', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('info');",
+                  "    pm.expect(jsonData).to.have.property('from_cache');",
+                  "    pm.expect(jsonData).to.have.property('results');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{localbaseurl}}/api/characters/?page=1",
+              "host": [
+                "{{localbaseurl}}"
+              ],
+              "path": [
+                "api",
+                "characters",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Lista personagens consumindo a API pública com suporte a cache configurável e indicação de `is_favorite`."
+          },
+          "response": []
+        },
+        {
+          "name": "Filtrar Personagens por Nome, Status e Espécie",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{localbaseurl}}/api/characters/?name=rick&status=alive&species=Human&page=1",
+              "host": [
+                "{{localbaseurl}}"
+              ],
+              "path": [
+                "api",
+                "characters",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "rick"
+                },
+                {
+                  "key": "status",
+                  "value": "alive"
+                },
+                {
+                  "key": "species",
+                  "value": "Human"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Filtra personagens na API local por `name`, `status` (`alive`, `dead`, `unknown`) e `species`."
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Personagem pelo ID (Com Fallback Offline)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{localbaseurl}}/api/characters/1/",
+              "host": [
+                "{{localbaseurl}}"
+              ],
+              "path": [
+                "api",
+                "characters",
+                "1",
+                ""
+              ]
+            },
+            "description": "Busca um personagem pelo ID. Caso a API pública esteja indisponível e o personagem esteja salvo nos favoritos locais (SQLite), retorna seus dados essenciais via fallback local."
+          },
+          "response": []
+        },
+        {
+          "name": "Adicionar um Favorito (Rick Sanchez #1)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('Saved external_id is 1', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.external_id).to.eql(1);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"character_id\": 1,\n  \"notes\": \"Cientista genial da dimensão C-137\"\n}"
+            },
+            "url": {
+              "raw": "{{localbaseurl}}/api/favorites/",
+              "host": [
+                "{{localbaseurl}}"
+              ],
+              "path": [
+                "api",
+                "favorites",
+                ""
+              ]
+            },
+            "description": "Busca o personagem de ID 1 na API pública e salva localmente seus dados essenciais no SQLite."
+          },
+          "response": []
+        },
+        {
+          "name": "Adicionar um Favorito (Morty Smith #2)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"character_id\": 2,\n  \"notes\": \"Parceiro de aventuras do Rick\"\n}"
+            },
+            "url": {
+              "raw": "{{localbaseurl}}/api/favorites/",
+              "host": [
+                "{{localbaseurl}}"
+              ],
+              "path": [
+                "api",
+                "favorites",
+                ""
+              ]
+            },
+            "description": "Adiciona Morty Smith (ID 2) aos favoritos no SQLite para enriquecer as estatísticas do Pandas."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Favoritos (SQLite)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Contains count and results', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('count');",
+                  "    pm.expect(jsonData).to.have.property('results');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{localbaseurl}}/api/favorites/",
+              "host": [
+                "{{localbaseurl}}"
+              ],
+              "path": [
+                "api",
+                "favorites",
+                ""
+              ]
+            },
+            "description": "Lista todos os personagens favoritos salvos localmente no SQLite (funciona 100% offline)."
+          },
+          "response": []
+        },
+        {
+          "name": "Adicionar Episódio Favorito (Pilot S01E01 #1)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"episode_id\": 1,\n  \"notes\": \"Episódio piloto clássico\"\n}"
+            },
+            "url": {
+              "raw": "{{localbaseurl}}/api/favorites/episodes/",
+              "host": [
+                "{{localbaseurl}}"
+              ],
+              "path": [
+                "api",
+                "favorites",
+                "episodes",
+                ""
+              ]
+            },
+            "description": "Salva um episódio favorito diretamente no SQLite a partir do seu ID na API pública."
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Episódios Favoritos no SQLite",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{localbaseurl}}/api/favorites/episodes/",
+              "host": [
+                "{{localbaseurl}}"
+              ],
+              "path": [
+                "api",
+                "favorites",
+                "episodes",
+                ""
+              ]
+            },
+            "description": "Lista os episódios favoritos persistidos no SQLite e também exibe a agregação de episódios dos personagens favoritos."
+          },
+          "response": []
+        },
+        {
+          "name": "Consultar Stats dos Favoritos (Pandas - GET)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Contains Pandas stats metrics', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('total_favorites');",
+                  "    pm.expect(jsonData).to.have.property('by_status');",
+                  "    pm.expect(jsonData).to.have.property('by_species');",
+                  "    pm.expect(jsonData).to.have.property('episode_stats');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{localbaseurl}}/api/favorites/stats/",
+              "host": [
+                "{{localbaseurl}}"
+              ],
+              "path": [
+                "api",
+                "favorites",
+                "stats",
+                ""
+              ]
+            },
+            "description": "Endpoint RESTful principal (GET) que utiliza Pandas para calcular estatísticas completas sobre os favoritos armazenados no SQLite."
+          },
+          "response": []
+        },
+        {
+          "name": "Consultar Stats com Filtro no Body (Pandas - POST)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Alive\",\n  \"species\": \"Human\"\n}"
+            },
+            "url": {
+              "raw": "{{localbaseurl}}/api/favorites/stats/",
+              "host": [
+                "{{localbaseurl}}"
+              ],
+              "path": [
+                "api",
+                "favorites",
+                "stats",
+                ""
+              ]
+            },
+            "description": "Permite enviar parâmetros de recorte no corpo via POST para processar estatísticas customizadas com Pandas."
+          },
+          "response": []
+        },
+        {
+          "name": "Remover Favorito (#2)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{localbaseurl}}/api/favorites/2/",
+              "host": [
+                "{{localbaseurl}}"
+              ],
+              "path": [
+                "api",
+                "favorites",
+                "2",
+                ""
+              ]
+            },
+            "description": "Remove o personagem de ID 2 da tabela de favoritos no SQLite."
+          },
+          "response": []
+        },
+        {
+          "name": "Exemplo de Erro 404 - Personagem Inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "pm.test('Standardized error payload', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.eql(true);",
+                  "    pm.expect(jsonData.code).to.eql('resource_not_found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{localbaseurl}}/api/characters/999999/",
+              "host": [
+                "{{localbaseurl}}"
+              ],
+              "path": [
+                "api",
+                "characters",
+                "999999",
+                ""
+              ]
+            },
+            "description": "Exemplo de tratamento padronizado de erro 404 ao buscar um personagem que não existe na API pública."
+          },
+          "response": []
+        },
+        {
+          "name": "Exemplo de Erro 400 - Status Inválido no Filtro",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{localbaseurl}}/api/characters/?status=imortal",
+              "host": [
+                "{{localbaseurl}}"
+              ],
+              "path": [
+                "api",
+                "characters",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "imortal"
+                }
+              ]
+            },
+            "description": "Exemplo de erro 400 de validação quando um filtro inválido é informado."
+          },
+          "response": []
+        },
+        {
+          "name": "Exemplo de Erro 400 - Favorito Duplicado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"character_id\": 1\n}"
+            },
+            "url": {
+              "raw": "{{localbaseurl}}/api/favorites/",
+              "host": [
+                "{{localbaseurl}}"
+              ],
+              "path": [
+                "api",
+                "favorites",
+                ""
+              ]
+            },
+            "description": "Exemplo de erro 400 ao tentar favoritar um personagem que já está salvo no SQLite."
+          },
+          "response": []
+        },
+        {
+          "name": "Exemplo de Erro 404 - Remover Favorito Inexistente",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{localbaseurl}}/api/favorites/999999/",
+              "host": [
+                "{{localbaseurl}}"
+              ],
+              "path": [
+                "api",
+                "favorites",
+                "999999",
+                ""
+              ]
+            },
+            "description": "Exemplo de erro 404 ao tentar remover um favorito que não consta no banco SQLite."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,206 @@
+{
+  "info": {
+    "_postman_id": "a9d7f514-64b2-4e82-9a19-8a391c074b21",
+    "name": "Rick and Morty Explorer API - Portfolio Collection",
+    "description": "Coleção completa para testar tanto a API Pública oficial de Rick and Morty (`{{publicbaseurl}}`) quanto a API própria `rick-and-morty-explorer-api` (`{{localbaseurl}}`), incluindo paginação, filtros, favoritos em SQLite, episódios favoritos, estatísticas com Pandas e cenários de erro.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "publicbaseurl",
+      "value": "https://rickandmortyapi.com/api",
+      "type": "string"
+    },
+    {
+      "key": "localbaseurl",
+      "value": "http://localhost:8000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. API Publica",
+      "description": "Consultas diretas à API pública oficial de Rick and Morty (`{{publicbaseurl}}`).",
+      "item": [
+        {
+          "name": "Listar Personagens (Paginado)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}],
+            "url": {
+              "raw": "{{publicbaseurl}}/character?page=1",
+              "host": ["{{publicbaseurl}}"],
+              "path": ["character"],
+              "query": [{"key": "page", "value": "1"}]
+            }
+          }
+        },
+        {
+          "name": "Buscar Personagem por ID (Rick Sanchez)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}],
+            "url": {
+              "raw": "{{publicbaseurl}}/character/1",
+              "host": ["{{publicbaseurl}}"],
+              "path": ["character", "1"]
+            }
+          }
+        },
+        {
+          "name": "Filtrar Personagens (Nome, Status e Espécie)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}],
+            "url": {
+              "raw": "{{publicbaseurl}}/character/?name=rick&status=alive&species=Human",
+              "host": ["{{publicbaseurl}}"],
+              "path": ["character", ""],
+              "query": [
+                {"key": "name", "value": "rick"},
+                {"key": "status", "value": "alive"},
+                {"key": "species", "value": "Human"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Exemplo de Erro 404 na API Pública",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}],
+            "url": {
+              "raw": "{{publicbaseurl}}/character/999999",
+              "host": ["{{publicbaseurl}}"],
+              "path": ["character", "999999"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Minha API (Rick and Morty Explorer)",
+      "description": "Endpoints da API própria (`{{localbaseurl}}`).",
+      "item": [
+        {
+          "name": "Listar Personagens",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}],
+            "url": {
+              "raw": "{{localbaseurl}}/api/characters/?page=1",
+              "host": ["{{localbaseurl}}"],
+              "path": ["api", "characters", ""],
+              "query": [{"key": "page", "value": "1"}]
+            }
+          }
+        },
+        {
+          "name": "Filtrar Personagens (Nome, Status e Espécie)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}],
+            "url": {
+              "raw": "{{localbaseurl}}/api/characters/?name=rick&status=alive&species=Human",
+              "host": ["{{localbaseurl}}"],
+              "path": ["api", "characters", ""],
+              "query": [
+                {"key": "name", "value": "rick"},
+                {"key": "status", "value": "alive"},
+                {"key": "species", "value": "Human"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Buscar Personagem por ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}],
+            "url": {
+              "raw": "{{localbaseurl}}/api/characters/1/",
+              "host": ["{{localbaseurl}}"],
+              "path": ["api", "characters", "1", ""]
+            }
+          }
+        },
+        {
+          "name": "Adicionar um Favorito",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"character_id\": 1,\n  \"notes\": \"Rick Sanchez C-137\"\n}"
+            },
+            "url": {
+              "raw": "{{localbaseurl}}/api/favorites/",
+              "host": ["{{localbaseurl}}"],
+              "path": ["api", "favorites", ""]
+            }
+          }
+        },
+        {
+          "name": "Listar Favoritos",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}],
+            "url": {
+              "raw": "{{localbaseurl}}/api/favorites/",
+              "host": ["{{localbaseurl}}"],
+              "path": ["api", "favorites", ""]
+            }
+          }
+        },
+        {
+          "name": "Listar Episódios Favoritos",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}],
+            "url": {
+              "raw": "{{localbaseurl}}/api/favorites/episodes/",
+              "host": ["{{localbaseurl}}"],
+              "path": ["api", "favorites", "episodes", ""]
+            }
+          }
+        },
+        {
+          "name": "Consultar Stats (Pandas)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}],
+            "url": {
+              "raw": "{{localbaseurl}}/api/favorites/stats/",
+              "host": ["{{localbaseurl}}"],
+              "path": ["api", "favorites", "stats", ""]
+            }
+          }
+        },
+        {
+          "name": "Remover Favorito",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Accept", "value": "application/json"}],
+            "url": {
+              "raw": "{{localbaseurl}}/api/favorites/1/",
+              "host": ["{{localbaseurl}}"],
+              "path": ["api", "favorites", "1", ""]
+            }
+          }
+        },
+        {
+          "name": "Exemplo de Erro 404 - Personagem Inexistente",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Accept", "value": "application/json"}],
+            "url": {
+              "raw": "{{localbaseurl}}/api/characters/999999/",
+              "host": ["{{localbaseurl}}"],
+              "path": ["api", "characters", "999999", ""]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
