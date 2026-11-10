@@ -1,0 +1,23 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rick-and-morty-explorer-api
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.example
+    environment:
+      - DEBUG=True
+      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0,testserver
+      - DATABASE_NAME=/app/data/db.sqlite3
+      - RICK_AND_MORTY_API_BASE_URL=https://rickandmortyapi.com/api
+      - RICK_AND_MORTY_API_TIMEOUT=5
+      - CACHE_TTL_SECONDS=300
+    volumes:
+      - sqlite_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  sqlite_data:
